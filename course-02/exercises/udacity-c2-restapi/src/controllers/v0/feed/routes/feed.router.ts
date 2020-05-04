@@ -16,17 +16,42 @@ router.get('/', async (req: Request, res: Response) => {
     res.send(items);
 });
 
-//@TODO
-//Add an endpoint to GET a specific resource by Primary Key
+// Get a specific resource by id (PK)
+router.get('/:id', async (req: Request, res: Response) => {
+    let { id } = req.params;
+    const item = await FeedItem.findByPk(id);
 
-// update a specific resource
+    if ( !item ) {
+        res.send(404);
+    }
+
+    res.send(item);
+});
+
+// Update a specific resource by id (PK)
 router.patch('/:id', 
     requireAuth, 
     async (req: Request, res: Response) => {
-        //@TODO try it yourself
-        res.send(500).send("not implemented")
-});
+        let { id } = req.params;
+        let { caption, url } = req.body;
 
+        if ( !id || !caption || !url ) {
+            res.status(400).send('Request requires id, caption and url')
+        }
+
+        let item = await FeedItem.findByPk(id);
+        if ( !item ) {
+            res.status(404).send('item id not found')
+        }
+
+        let new_item = await FeedItem.update({
+            caption: caption,
+            url: url
+        }, { where: {id: id } });
+
+        res.status(204).send(new_item);
+
+    });
 
 // Get a signed url to put a new item in the bucket
 router.get('/signed-url/:fileName', 
