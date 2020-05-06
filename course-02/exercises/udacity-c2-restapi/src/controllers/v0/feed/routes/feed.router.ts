@@ -28,6 +28,13 @@ router.get('/:id', async (req: Request, res: Response) => {
     res.send(item);
 });
 
+// Delete a specific resource by id (PK)
+router.delete('/:id', async (req: Request, res: Response) => {
+    let { id } = req.params;
+    await FeedItem.destroy({ where: { id: id } });
+    res.status(200).send({ message: 'Item deleted successfully' });
+});
+
 // Update a specific resource by id (PK)
 router.patch('/:id', 
     requireAuth, 
