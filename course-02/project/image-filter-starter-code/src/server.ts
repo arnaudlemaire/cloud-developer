@@ -12,22 +12,17 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
   // Set the network port
   const port = process.env.PORT || 8082;
   
+  // Set the temporary directory for filtered image
+  const tmpFolder = './src/util/tmp/';
+
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
-  // @TODO
   // Deletes any files on the server on finish of the response
   app.use(function ( req, res, next ) {
     req.on("end", function() { 
-    
-      console.log(res.locals.filtered_image_url);
-      deleteLocalFiles([res.locals.filtered_image_url]);
-
-      // let array = [];
-      // fs.readdir(testFolder, (err, files) => {
-      //   files.forEach(file => array.push(`${testFolder}${file}`));
-      // });
-
+      const filesToDelete = fs.readdirSync(tmpFolder).map(file => `${tmpFolder}${file}`);
+      deleteLocalFiles(filesToDelete);
     });
     next();
   });
@@ -46,9 +41,7 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
     if ( !validUrl.isUri(image_url) ) { res.status(422).send('Invalid url.'); }
 
     const filtered_image_url = await filterImageFromURL(image_url);
-    res.locals.filtered_image_url = filtered_image_url;
     res.sendFile(filtered_image_url);
-
   });
 
 
