@@ -1,0 +1,203 @@
+{
+	"id": "74ea0d0d-2326-4f3b-a51e-d8bd444ccd84",
+	"name": "cloud-cdnd-c2-final",
+	"timestamp": "2020-05-08T13:03:47.996Z",
+	"collection_id": "1f3ccbfe-d7d5-4d4a-bb16-dcc506b9aff1",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 10,
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "b31f3932-dfd8-4873-b6d7-84c9f63d563b",
+			"name": "/filteredimage => Valid JPG image URL",
+			"url": "localhost:8082/filteredimage?image_url=http://jmcolberg.com/weblog/archives/kitten.jpg",
+			"time": 578,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Content Type is image/jpeg": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content Type is image/jpeg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				578
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Content Type is image/jpeg": true
+				}
+			]
+		},
+		{
+			"id": "41693405-88cb-4512-a02b-307ce3731788",
+			"name": "/filteredimage => Valid PNG image URL",
+			"url": "localhost:8082/filteredimage?image_url=https://www.festivalclaca.cat/imgfv/m/378-3784842_happy-cat-png-cat-tracker.png",
+			"time": 1465,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Status code is 200": true,
+				"Content Type is image/jpeg": true
+			},
+			"testPassFailCounts": {
+				"Status code is 200": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Content Type is image/jpeg": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1465
+			],
+			"allTests": [
+				{
+					"Status code is 200": true,
+					"Content Type is image/jpeg": true
+				}
+			]
+		},
+		{
+			"id": "88c659b4-750e-4293-b645-1c5f9a132e58",
+			"name": "/filteredimage => Invalid SVG image URL",
+			"url": "localhost:8082/filteredimage?image_url=https://upload.wikimedia.org/wikipedia/commons/6/67/Firefox_Logo%2C_2017.svg",
+			"time": 8,
+			"responseCode": {
+				"code": 422,
+				"name": "Unprocessable Entity"
+			},
+			"tests": {
+				"Status code is 422": true,
+				"Unsupported image format": true
+			},
+			"testPassFailCounts": {
+				"Status code is 422": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Unsupported image format": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				8
+			],
+			"allTests": [
+				{
+					"Status code is 422": true,
+					"Unsupported image format": true
+				}
+			]
+		},
+		{
+			"id": "b1fe2edd-adcd-450d-bbf2-cf3b795100f0",
+			"name": "/filteredimage => missing image_url parameter",
+			"url": "localhost:8082/filteredimage",
+			"time": 6,
+			"responseCode": {
+				"code": 422,
+				"name": "Unprocessable Entity"
+			},
+			"tests": {
+				"Status code is 422": true,
+				"Parameter missing": true
+			},
+			"testPassFailCounts": {
+				"Status code is 422": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Parameter missing": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				6
+			],
+			"allTests": [
+				{
+					"Status code is 422": true,
+					"Parameter missing": true
+				}
+			]
+		},
+		{
+			"id": "a41ae230-c070-437d-87c2-dd580d730daf",
+			"name": "/filteredimage => invalid image_url value",
+			"url": "localhost:8082/filteredimage?image_url=Helping-your-new-cat-or-kitten-settle-in-1.png",
+			"time": 11,
+			"responseCode": {
+				"code": 422,
+				"name": "Unprocessable Entity"
+			},
+			"tests": {
+				"Status code is 422": true,
+				"Invalid URL": true
+			},
+			"testPassFailCounts": {
+				"Status code is 422": {
+					"pass": 1,
+					"fail": 0
+				},
+				"Invalid URL": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				11
+			],
+			"allTests": [
+				{
+					"Status code is 422": true,
+					"Invalid URL": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 2068,
+	"collection": {
+		"requests": [
+			{
+				"id": "b31f3932-dfd8-4873-b6d7-84c9f63d563b",
+				"method": "GET"
+			},
+			{
+				"id": "41693405-88cb-4512-a02b-307ce3731788",
+				"method": "GET"
+			},
+			{
+				"id": "88c659b4-750e-4293-b645-1c5f9a132e58",
+				"method": "GET"
+			},
+			{
+				"id": "b1fe2edd-adcd-450d-bbf2-cf3b795100f0",
+				"method": "GET"
+			},
+			{
+				"id": "a41ae230-c070-437d-87c2-dd580d730daf",
+				"method": "GET"
+			}
+		]
+	}
+}
