@@ -12,7 +12,7 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
   // Set the network port
   const port = process.env.PORT || 8082;
   
-  // Set the temporary directory for filtered image
+  // Set the directory to store temporary filtered image
   const tmpFolder = './src/util/tmp/';
 
   // Use the body parser middleware for post requests
@@ -34,14 +34,19 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
   } );
   
   app.get("/filteredimage", async ( req, res ) => {
-    const { image_url } = req.query;
+    const imageUrl = req.query.image_url;
+    const loweredImageUrl = imageUrl.toLowerCase();
+    const urlSplit = loweredImageUrl.split('.');
+    const imageFormat = urlSplit[urlSplit.length -1];
+    const supportedFormat = ['jpg', 'jpeg', 'png'];
 
     // Validation
-    if ( !image_url ) { res.status(422).send('Require an image_url parameter.'); }
-    if ( !validUrl.isUri(image_url) ) { res.status(422).send('Invalid url.'); }
+    if ( !loweredImageUrl ) { res.status(422).send('Require an image_url parameter.'); }
+    if ( !validUrl.isUri(loweredImageUrl) ) { res.status(422).send('Invalid url.'); }
+    if ( !supportedFormat.includes(imageFormat) ) { res.status(422).send('Support only JPEG and PNG image files.'); }
 
-    const filtered_image_url = await filterImageFromURL(image_url);
-    res.sendFile(filtered_image_url);
+    const filteredImageUrl = await filterImageFromURL(loweredImageUrl);
+    res.sendFile(filteredImageUrl);
   });
 
 
