@@ -35,16 +35,19 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
   
   app.get("/filteredimage", async ( req, res ) => {
     const imageUrl = req.query.image_url;
+
+    // Validation
+    if ( !imageUrl ) { res.status(422).send('Require an image_url parameter.'); }
+
     const loweredImageUrl = imageUrl.toLowerCase();
+    if ( !validUrl.isUri(loweredImageUrl) ) { res.status(422).send('Invalid url.'); }
+
     const urlSplit = loweredImageUrl.split('.');
     const imageFormat = urlSplit[urlSplit.length -1];
     const supportedFormat = ['jpg', 'jpeg', 'png'];
-
-    // Validation
-    if ( !loweredImageUrl ) { res.status(422).send('Require an image_url parameter.'); }
-    if ( !validUrl.isUri(loweredImageUrl) ) { res.status(422).send('Invalid url.'); }
     if ( !supportedFormat.includes(imageFormat) ) { res.status(422).send('Support only JPEG and PNG image files.'); }
 
+    // Filter image and send it in the response
     const filteredImageUrl = await filterImageFromURL(loweredImageUrl);
     res.sendFile(filteredImageUrl);
   });
