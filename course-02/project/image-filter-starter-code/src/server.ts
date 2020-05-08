@@ -1,6 +1,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import {filterImageFromURL, deleteLocalFiles} from './util/util';
+import validUrl from 'valid-url';
+import fs from 'fs';
+import { filterImageFromURL, deleteLocalFiles } from './util/util';
 
 (async () => {
 
@@ -10,33 +12,46 @@ import {filterImageFromURL, deleteLocalFiles} from './util/util';
   // Set the network port
   const port = process.env.PORT || 8082;
   
+  // Set the directory to store temporary filtered image
+  const tmpFolder = './src/util/tmp/';
+
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
 
-  // @TODO1 IMPLEMENT A RESTFUL ENDPOINT
-  // GET /filteredimage?image_url={{URL}}
-  // endpoint to filter an image from a public url.
-  // IT SHOULD
-  //    1
-  //    1. validate the image_url query
-  //    2. call filterImageFromURL(image_url) to filter the image
-  //    3. send the resulting file in the response
-  //    4. deletes any files on the server on finish of the response
-  // QUERY PARAMATERS
-  //    image_url: URL of a publicly accessible image
-  // RETURNS
-  //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
+  // Deletes any files on the server on finish of the response
+  app.use(function ( req, res, next ) {
+    req.on("end", function() { 
+      const filesToDelete = fs.readdirSync(tmpFolder).map(file => `${tmpFolder}${file}`);
+      deleteLocalFiles(filesToDelete);
+    });
+    next();
+  });
 
-  /**************************************************************************** */
-
-  //! END @TODO1
-  
   // Root Endpoint
   // Displays a simple message to the user
   app.get( "/", async ( req, res ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
   
+  app.get("/filteredimage", async ( req, res ) => {
+    const imageUrl = req.query.image_url;
+
+    // Validation
+    if ( !imageUrl ) { res.status(422).send('Require an image_url parameter.'); }
+
+    const loweredImageUrl = imageUrl.toLowerCase();
+    if ( !validUrl.isUri(loweredImageUrl) ) { res.status(422).send('Invalid url.'); }
+
+    const urlSplit = loweredImageUrl.split('.');
+    const imageFormat = urlSplit[urlSplit.length -1];
+    const supportedFormat = ['jpg', 'jpeg', 'png'];
+    if ( !supportedFormat.includes(imageFormat) ) { res.status(422).send('Support only JPEG and PNG image files.'); }
+
+    // Filter image and send it in the response
+    const filteredImageUrl = await filterImageFromURL(loweredImageUrl);
+    res.sendFile(filteredImageUrl);
+  });
+
 
   // Start the Server
   app.listen( port, () => {
