@@ -1,8 +1,8 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import validUrl from 'valid-url';
 import fs from 'fs';
+import validUrl from 'valid-url';
 import { filterImageFromURL, deleteLocalFiles } from './util/util';
+import express, { Request, Response } from 'express';
+import bodyParser from 'body-parser';
 
 (async () => {
 
@@ -10,10 +10,10 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
   const app = express();
 
   // Set the network port
-  const port = process.env.PORT || 8082;
+  const port = process.env.PORT || 8080;
   
-  // Set the directory to store temporary filtered image
-  const tmpFolder = './src/util/tmp/';
+  // Set the directory to store image temporarily
+  const tmpFolder = process.env.APP_TMP_DIRECTORY || './www/util/tmp';
 
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
@@ -29,26 +29,24 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
 
   // Root Endpoint
   // Displays a simple message to the user
-  app.get( "/", async ( req, res ) => {
+  app.get( "/", (req: Request, res: Response ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
   
-  app.get("/filteredimage", async ( req, res ) => {
+  app.get("/filteredimage", async (req: Request, res: Response ) => {
     const imageUrl = req.query.image_url;
 
     // Validation
     if ( !imageUrl ) { res.status(422).send('Require an image_url parameter.'); }
+    if ( !validUrl.isUri(imageUrl) ) { res.status(422).send('Invalid url.'); }
 
-    const loweredImageUrl = imageUrl.toLowerCase();
-    if ( !validUrl.isUri(loweredImageUrl) ) { res.status(422).send('Invalid url.'); }
-
-    const urlSplit = loweredImageUrl.split('.');
+    const urlSplit = imageUrl.split('.');
     const imageFormat = urlSplit[urlSplit.length -1];
     const supportedFormat = ['jpg', 'jpeg', 'png'];
     if ( !supportedFormat.includes(imageFormat) ) { res.status(422).send('Support only JPEG and PNG image files.'); }
 
     // Filter image and send it in the response
-    const filteredImageUrl = await filterImageFromURL(loweredImageUrl);
+    const filteredImageUrl = await filterImageFromURL(imageUrl);
     res.sendFile(filteredImageUrl);
   });
 
