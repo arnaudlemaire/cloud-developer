@@ -12,8 +12,8 @@ import bodyParser from 'body-parser';
   // Set the network port
   const port = process.env.PORT || 8080;
   
-  // Set the directory to store temporary filtered image
-  const tmpFolder = './tmp/';
+  // Set the directory to store image temporarily
+  const tmpFolder = process.env.APP_TMP_DIRECTORY || './www/util/tmp';
 
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
@@ -38,17 +38,15 @@ import bodyParser from 'body-parser';
 
     // Validation
     if ( !imageUrl ) { res.status(422).send('Require an image_url parameter.'); }
+    if ( !validUrl.isUri(imageUrl) ) { res.status(422).send('Invalid url.'); }
 
-    const loweredImageUrl = imageUrl.toLowerCase();
-    if ( !validUrl.isUri(loweredImageUrl) ) { res.status(422).send('Invalid url.'); }
-
-    const urlSplit = loweredImageUrl.split('.');
+    const urlSplit = imageUrl.split('.');
     const imageFormat = urlSplit[urlSplit.length -1];
     const supportedFormat = ['jpg', 'jpeg', 'png'];
     if ( !supportedFormat.includes(imageFormat) ) { res.status(422).send('Support only JPEG and PNG image files.'); }
 
     // Filter image and send it in the response
-    const filteredImageUrl = await filterImageFromURL(loweredImageUrl);
+    const filteredImageUrl = await filterImageFromURL(imageUrl);
     res.sendFile(filteredImageUrl);
   });
 
