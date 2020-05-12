@@ -1,8 +1,8 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import validUrl from 'valid-url';
 import fs from 'fs';
+import validUrl from 'valid-url';
 import { filterImageFromURL, deleteLocalFiles } from './util/util';
+import express, { Request, Response } from 'express';
+import bodyParser from 'body-parser';
 
 (async () => {
 
@@ -10,10 +10,10 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
   const app = express();
 
   // Set the network port
-  const port = process.env.PORT || 8082;
+  const port = process.env.PORT || 8080;
   
   // Set the directory to store temporary filtered image
-  const tmpFolder = './src/util/tmp/';
+  const tmpFolder = './tmp/';
 
   // Use the body parser middleware for post requests
   app.use(bodyParser.json());
@@ -29,11 +29,11 @@ import { filterImageFromURL, deleteLocalFiles } from './util/util';
 
   // Root Endpoint
   // Displays a simple message to the user
-  app.get( "/", async ( req, res ) => {
+  app.get( "/", (req: Request, res: Response ) => {
     res.send("try GET /filteredimage?image_url={{}}")
   } );
   
-  app.get("/filteredimage", async ( req, res ) => {
+  app.get("/filteredimage", async (req: Request, res: Response ) => {
     const imageUrl = req.query.image_url;
 
     // Validation
